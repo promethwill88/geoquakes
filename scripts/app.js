@@ -43,51 +43,7 @@ function quakeOne(){
 // Run quakeOne
 quakeOne();	
 
-
-// Time elapsed since quake (eg. Current Date - Date of Quake)		
-let durationInSeconds = {
-  epochs: ['year', 'month', 'day', 'hour', 'minute'],
-  year: 31536000,
-  month: 2592000,
-  day: 86400,
-  hour: 3600,
-  minute: 60
-};
-
-function getDuration(seconds) {
-  let epoch, interval;
-
-  for (let i = 0; i < durationInSeconds.epochs.length; i++) {
-    epoch = durationInSeconds.epochs[i];
-    interval = Math.floor(seconds / durationInSeconds[epoch]);
-    if (interval >= 1) {
-      return {
-        interval: interval,
-        epoch: epoch
-      };
-    }
-  }
-
-};
-
-function timeSince(date) {
-  let seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  let duration = getDuration(seconds);
-  let suffix = (duration.interval > 1 || duration.interval === 0) ? 's' : '';
-  return duration.interval + ' ' + duration.epoch + suffix;
-};
-
-
-// forEach Loop with QuakeTimeSince
-
-//json.features.forEach((element) => {
-//	$('#info').append($("<p>" + .properties.title + " - " + quakeTimeSince + " ago</p>"));
-//})
-
-
-
 // 4. API call to Google Maps
-
 function initMap() {
 	var locations = [
 	   ['M 5.3 - 1km Andaman Islands, India region', 14.4749, 93.056 , 5],
@@ -126,6 +82,11 @@ function initMap() {
 }
 
 
+// forEach Loop with QuakeTimeSince
+
+//json.features.forEach((element) => {
+//	$('#info').append($("<p>" + .properties.title + " - " + quakeTimeSince + " ago</p>"));
+//})
 
 // 5. Take data from Maps
 	// Req: simple map
