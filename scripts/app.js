@@ -4,14 +4,6 @@ var weekly_quakes_endpoint = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/s
 
 // Load Quake List
 quakeOne();	
-
-function initMap() {
-	map = new google.maps.Map(document.getElementById('map'), {
-  		// Centers on SF
-  		center: {lat: 37.7749, lng: -122.4194},
-  		zoom: 4
-	});
-}
 // Load Map
 initMap();
 
@@ -41,8 +33,8 @@ function quakeOne(){
 			// Loop through json.features
 			json.features.forEach((element) => {
 				
-				let lat = element.geometry.coordinates[0];
-				let lng = element.geometry.coordinates[1];
+				let lat = element.geometry.coordinates[1];
+				let lng = element.geometry.coordinates[0];
 
 				//Custom icon
 				var customIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Bullseye1.png/50px-Bullseye1.png';
@@ -50,8 +42,9 @@ function quakeOne(){
 				// Marker call from Google API
 				let marker = new google.maps.Marker({
 					map: map,
-					// Custom icon
+					// 8. Restyle pins to provided image
 					icon: customIcon,
+					// 7. Take data from USGS and plug into Maps
 					position: {
 						lat: lat, 
 						lng: lng
@@ -59,11 +52,8 @@ function quakeOne(){
 				});
 
 				let quakeTimeSince = timeSince(element.properties.time);
-				$('#info').append("<p>" + element.properties.title + " - " + quakeTimeSince + " ago</p>");
-
-
 				// 3. Append onto html element
-				//$('#info').append("<p>" + element.properties.title + "</p>");
+				$('#info').append("<p>" + element.properties.title + " - " + quakeTimeSince + " ago</p>");
 			});
 				
 			}	
@@ -75,23 +65,21 @@ function quakeOne(){
 				console.dir(xhr);
 			}
 }
-});
+
 
 // 4. API call to Google Maps
-// forEach Loop with QuakeTimeSince
+function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), {
+  		// Centers on SF
+  		center: {lat: 37.7749, lng: -122.4194},
+  		zoom: 4
+	});
+}
 
-//json.features.forEach((element) => {
-//	$('#info').append($("<p>" + .properties.title + " - " + quakeTimeSince + " ago</p>"));
-//})
-
-// 5. Take data from Maps
-	// Req: simple map
-// 6. Append onto html element
-// 7. Take data from USGS and plug into Maps
-// 8. Restyle pins to provided image
+});
 
 
-// BONUS - Time duration (Stack Overflow)
+// BONUS - Time duration (Stack Overflow resource)
 var DURATION_IN_SECONDS = {
   epochs: ['year', 'month', 'day', 'hour', 'minute'],
   year: 31536000,
