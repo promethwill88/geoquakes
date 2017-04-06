@@ -44,9 +44,14 @@ function quakeOne(){
 				let lat = element.geometry.coordinates[0];
 				let lng = element.geometry.coordinates[1];
 
+				//Custom icon
+				var customIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Bullseye1.png/50px-Bullseye1.png';
+
 				// Marker call from Google API
 				let marker = new google.maps.Marker({
 					map: map,
+					// Custom icon
+					icon: customIcon,
 					position: {
 						lat: lat, 
 						lng: lng
