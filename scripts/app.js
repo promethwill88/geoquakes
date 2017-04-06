@@ -1,5 +1,19 @@
-// define globals
+$(document).on("ready", function() {
+
 var weekly_quakes_endpoint = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
+
+// Load Quake List
+quakeOne();	
+
+function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), {
+  		// Centers on SF
+  		center: {lat: 37.7749, lng: -122.4194},
+  		zoom: 4
+	});
+}
+// Load Map
+initMap();
 
 // 1. API call to USGS
 function quakeOne(){
@@ -9,27 +23,43 @@ function quakeOne(){
 		    url: weekly_quakes_endpoint,
 		    success: onSuccess,
 		    error: onError
-		    
+		    	
 			});
 			
 			// 2. Take data from USGS 
 			function onSuccess(json) {
 
-				// Sanity check
-				let quakeTitle = json.features[4].properties.title;
-				let quakeGeo = json.features[4].geometry.coordinates;
-				
-
-				// Prints title
+			// SANITY CHECK START
+				let quakeTitle = json.features[0].properties.title;
+				let quakeGeo = json.features[0].geometry.coordinates;
+				let quakeTime = json.features[0].properties.time;
 				console.log(quakeTitle);				
-
-				// Prints coordinates of quake - to be added to GMaps API
 				console.log(quakeGeo);
+				console.log(quakeTime);
+			// SANITY CHECK END
+
+			// Loop through json.features
+			json.features.forEach((element) => {
+				
+				let lat = element.geometry.coordinates[0];
+				let lng = element.geometry.coordinates[1];
+
+				// Marker call from Google API
+				let marker = new google.maps.Marker({
+					map: map,
+					position: {
+						lat: lat, 
+						lng: lng
+					}
+				});
+
+				let quakeTimeSince = timeSince(element.properties.time);
+				$('#info').append("<p>" + element.properties.title + " - " + quakeTimeSince + " ago</p>");
+
 
 				// 3. Append onto html element
-				json.features.forEach((element) => {
-					$('#info').append($("<p>" + element.properties.title + "</p>"));
-					})
+				//$('#info').append("<p>" + element.properties.title + "</p>");
+			});
 				
 			}	
 			
@@ -40,48 +70,9 @@ function quakeOne(){
 				console.dir(xhr);
 			}
 }
-// Run quakeOne
-quakeOne();	
+});
 
 // 4. API call to Google Maps
-function initMap() {
-	var locations = [
-	   ['M 5.3 - 1km Andaman Islands, India region', 14.4749, 93.056 , 5],
-	   ['M 4.8 - 1km SW of Nafpaktos, Greece', 38.3848, 21.8147, 4],
-	   ['M 5.6 - 70km NNE of Isangel, Vanuatu', -18.989, 169.5773, 3],
-	   ['M 5.1 - 62km NNW of Torbat-e Jam, Iran', 35.7887, 60.4269, 2],
-	   ['M 4.5 - 7km ENE of Miyako, Japan', 39.6522, 142.0409, 1],
-	   ['San Francisco', 37.78, -122.44 , 6]
- 	];
-
- 	var map = new google.maps.Map(document.getElementById('map'), {
-	   zoom: 4,
-	   center: new google.maps.LatLng(37.78, -122.44, 6),
-	   mapTypeId: google.maps.MapTypeId.ROADMAP
- 	});
-
- 	var infowindow = new google.maps.InfoWindow();
-
-    var marker, i;
-    var markers = new Array();
-
-    for (i = 0; i < locations.length; i++) {
-      	marker = new google.maps.Marker({
-        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-        map: map
-     });
-
-    markers.push(marker);
-    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-    	return function() {
-        infowindow.setContent(locations[i][0]);
-        infowindow.open(map, marker);
-        }
-    })(marker, i));
-    }   
-}
-
-
 // forEach Loop with QuakeTimeSince
 
 //json.features.forEach((element) => {
@@ -95,12 +86,37 @@ function initMap() {
 // 8. Restyle pins to provided image
 
 
+// BONUS - Time duration (Stack Overflow)
+var DURATION_IN_SECONDS = {
+  epochs: ['year', 'month', 'day', 'hour', 'minute'],
+  year: 31536000,
+  month: 2592000,
+  day: 86400,
+  hour: 3600,
+  minute: 60
+};
+
+function getDuration(seconds) {
+  var epoch, interval;
+
+  for (var i = 0; i < DURATION_IN_SECONDS.epochs.length; i++) {
+    epoch = DURATION_IN_SECONDS.epochs[i];
+    interval = Math.floor(seconds / DURATION_IN_SECONDS[epoch]);
+    if (interval >= 1) {
+      return {
+        interval: interval,
+        epoch: epoch
+      };
+    }
+  }
+
+};
+
+function timeSince(date) {
+  var seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  var duration = getDuration(seconds);
+  var suffix = (duration.interval > 1 || duration.interval === 0) ? 's' : '';
+  return duration.interval + ' ' + duration.epoch + suffix;
+};
 
 
-
-
-$(document).on("ready", function() {
-
-  // CODE IN HERE!
-
-});
